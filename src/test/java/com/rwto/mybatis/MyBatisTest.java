@@ -2,11 +2,17 @@ package com.rwto.mybatis;
 
 import com.rwto.mybatis.binding.MapperProxyFactory;
 import com.rwto.mybatis.binding.MapperRegistry;
+import com.rwto.mybatis.builder.xml.XMLConfigBuilder;
 import com.rwto.mybatis.dao.UserDao;
+import com.rwto.mybatis.io.Resources;
 import com.rwto.mybatis.session.SqlSession;
+import com.rwto.mybatis.session.SqlSessionFactory;
+import com.rwto.mybatis.session.SqlSessionFactoryBuilder;
 import com.rwto.mybatis.session.defaults.DefaultSqlSessionFactory;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,36 +43,53 @@ public class MyBatisTest {
      */
     @Test
     public void test02(){
-        // 包扫描，生成mapperRegistry
-        MapperRegistry mapperRegistry = new MapperRegistry();
-        mapperRegistry.addMappers("com.rwto.mybatis.dao");
-
-        //构建sqlSession
-        DefaultSqlSessionFactory defaultSqlSessionFactory = new DefaultSqlSessionFactory(mapperRegistry);
-        SqlSession sqlSession = defaultSqlSessionFactory.openSession();
-
-
-        UserDao userDao = sqlSession.getMapper(UserDao.class);
-
-        System.out.println(userDao.getUserName("123"));
+//        // 包扫描，生成mapperRegistry
+//        MapperRegistry mapperRegistry = new MapperRegistry();
+//        mapperRegistry.addMappers("com.rwto.mybatis.dao");
+//
+//        //构建sqlSession
+//        DefaultSqlSessionFactory defaultSqlSessionFactory = new DefaultSqlSessionFactory(mapperRegistry);
+//        SqlSession sqlSession = defaultSqlSessionFactory.openSession();
+//
+//
+//        UserDao userDao = sqlSession.getMapper(UserDao.class);
+//
+//        System.out.println(userDao.getUserName("123"));
     }
 
     /**
      * 增加配置文件解析，通过配置文件，配置包扫描
      */
     @Test
-    public void test03(){
-        //TODO: 解析配置文件，获取包扫描路径，构建MapperRegistry 进而构建 SqlSessionFactory
-        MapperRegistry mapperRegistry = new MapperRegistry();
-        mapperRegistry.addMappers("com.rwto.mybatis.dao");
+    public void test03() throws IOException {
+        //获取 mybatis-config.xml 字符流
+        Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
 
-        //构建sqlSession
-        DefaultSqlSessionFactory defaultSqlSessionFactory = new DefaultSqlSessionFactory(mapperRegistry);
-        SqlSession sqlSession = defaultSqlSessionFactory.openSession();
-
+        //解析配置文件，获取包扫描路径，构建MapperRegistry 进而构建 SqlSessionFactory
+        SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader);
+        SqlSession sqlSession = sessionFactory.openSession();
 
         UserDao userDao = sqlSession.getMapper(UserDao.class);
 
         System.out.println(userDao.getUserName("123"));
+    }
+
+
+    /**
+     * 增加连接池，执行sql
+     * @throws IOException
+     */
+    @Test
+    public void test04() throws IOException {
+        //获取 mybatis-config.xml 字符流
+        Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
+
+        //解析配置文件，获取包扫描路径，构建MapperRegistry 进而构建 SqlSessionFactory
+        SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader);
+        SqlSession sqlSession = sessionFactory.openSession();
+
+        UserDao userDao = sqlSession.getMapper(UserDao.class);
+
+        System.out.println(userDao.getUserInfoById("1"));
     }
 }

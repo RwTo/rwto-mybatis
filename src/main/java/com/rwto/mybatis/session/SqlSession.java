@@ -36,4 +36,6 @@ public interface SqlSession {
      * @return a mapper bound to this SqlSession
      */
     <T> T getMapper(Class<T> type);
+
+    Configuration getConfiguration();
 }

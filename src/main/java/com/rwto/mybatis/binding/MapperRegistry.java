@@ -36,7 +36,7 @@ public class MapperRegistry {
         }
     }
 
-    private void addMapper(Class<?> type) {
+    public void addMapper(Class<?> type) {
         if(type.isInterface()){
             if (hasMapper(type)) {
                 // 如果重复添加了，报错

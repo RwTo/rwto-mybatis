@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rwto.mybatis.dao.UserDao">
+
+    <select id="getUserInfoById" parameterType="java.lang.Long" resultType="com.rwto.mybatis.po.User">
+        SELECT id, user_name userName
+        FROM t_user
+        where id = #{id}
+    </select>
+
+    <select id="getUserName" resultType="java.lang.String">
+        SELECT userName
+        FROM t_user
+        where id = #{id}
+    </select>
+</mapper>
