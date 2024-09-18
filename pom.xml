@@ -17,6 +17,19 @@
 
 
     <dependencies>
+        <!-- 引入SLF4J的API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version>
+        </dependency>
+
+        <!-- 引入Logback作为SLF4J的实现 -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.6</version>
+        </dependency>
 
         <dependency>
             <groupId>mysql</groupId>

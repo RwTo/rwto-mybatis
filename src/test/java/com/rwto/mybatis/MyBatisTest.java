@@ -4,6 +4,9 @@ import com.rwto.mybatis.binding.MapperProxyFactory;
 import com.rwto.mybatis.binding.MapperRegistry;
 import com.rwto.mybatis.builder.xml.XMLConfigBuilder;
 import com.rwto.mybatis.dao.UserDao;
+import com.rwto.mybatis.datasource.pooled.PooledDataSource;
+import com.rwto.mybatis.datasource.pooled.PooledDataSourceFactory;
+import com.rwto.mybatis.datasource.unpooled.UnpooledDataSource;
 import com.rwto.mybatis.io.Resources;
 import com.rwto.mybatis.session.SqlSession;
 import com.rwto.mybatis.session.SqlSessionFactory;
@@ -11,8 +14,13 @@ import com.rwto.mybatis.session.SqlSessionFactoryBuilder;
 import com.rwto.mybatis.session.defaults.DefaultSqlSessionFactory;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Reader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +67,7 @@ public class MyBatisTest {
 
     /**
      * 增加配置文件解析，通过配置文件，配置包扫描
+     * 增加连接池，执行sql
      */
     @Test
     public void test03() throws IOException {
@@ -76,20 +85,66 @@ public class MyBatisTest {
 
 
     /**
-     * 增加连接池，执行sql
+     * 验证连接池
      * @throws IOException
      */
     @Test
-    public void test04() throws IOException {
-        //获取 mybatis-config.xml 字符流
-        Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
+    public void test04() throws IOException, InterruptedException, SQLException {
+        PooledDataSource pooledDataSource = new PooledDataSource();
+        pooledDataSource.setDriver("com.mysql.cj.jdbc.Driver");
+        pooledDataSource.setUrl("jdbc:mysql://127.0.0.1:3306/boot_study?useUnicode=true");
+        pooledDataSource.setUsername("local");
+        pooledDataSource.setPassword("1234");
 
-        //解析配置文件，获取包扫描路径，构建MapperRegistry 进而构建 SqlSessionFactory
-        SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader);
-        SqlSession sqlSession = sessionFactory.openSession();
+        // 持续获得链接
+        while (true) {
+            Connection connection = pooledDataSource.getConnection();
+            /*
+            * 这里实际调用的 PooledConnection中的 realConnection 的toString()方法
+            * realConnection 实际没有改变，所以每次打印的值相同
+            * */
+            System.out.println(connection);
+            Thread.sleep(1000);
+            // 注释掉/不注释掉测试
+            //connection.close();
+        }
+    }
 
-        UserDao userDao = sqlSession.getMapper(UserDao.class);
+    /**
+     * 验证同一个连接，执行两个sql, 会按照顺序 串行执行
+     * @throws IOException
+     */
+    @Test
+    public void test05() throws IOException, InterruptedException, SQLException {
+        UnpooledDataSource unpooledDataSource = new UnpooledDataSource();
+        unpooledDataSource.setDriver("com.mysql.cj.jdbc.Driver");
+        unpooledDataSource.setUrl("jdbc:mysql://127.0.0.1:3306/boot_study?useUnicode=true");
+        unpooledDataSource.setUsername("local");
+        unpooledDataSource.setPassword("1234");
 
-        System.out.println(userDao.getUserInfoById("1"));
+        Connection connection = unpooledDataSource.getConnection();
+
+        new Thread(()->{
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(" update t_user set user_name = '11' where id = 11");
+                preparedStatement.executeUpdate();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }).start();
+
+        Thread.sleep(1000);
+        new Thread(()->{
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(" update t_user set user_name = 'rmw' where id = 1");
+                preparedStatement.executeUpdate();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }).start();
+
+        while (true){
+
+        }
     }
 }
