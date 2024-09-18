@@ -17,6 +17,12 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
+        </dependency>
         <!-- 引入SLF4J的API -->
         <dependency>
             <groupId>org.slf4j</groupId>

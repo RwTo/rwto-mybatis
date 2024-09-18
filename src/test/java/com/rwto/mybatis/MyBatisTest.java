@@ -1,5 +1,6 @@
 package com.rwto.mybatis;
 
+import com.alibaba.fastjson.JSON;
 import com.rwto.mybatis.binding.MapperProxyFactory;
 import com.rwto.mybatis.binding.MapperRegistry;
 import com.rwto.mybatis.builder.xml.XMLConfigBuilder;
@@ -8,10 +9,13 @@ import com.rwto.mybatis.datasource.pooled.PooledDataSource;
 import com.rwto.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.rwto.mybatis.datasource.unpooled.UnpooledDataSource;
 import com.rwto.mybatis.io.Resources;
+import com.rwto.mybatis.reflection.MetaObject;
+import com.rwto.mybatis.reflection.SystemMetaObject;
 import com.rwto.mybatis.session.SqlSession;
 import com.rwto.mybatis.session.SqlSessionFactory;
 import com.rwto.mybatis.session.SqlSessionFactoryBuilder;
 import com.rwto.mybatis.session.defaults.DefaultSqlSessionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -21,13 +25,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author renmw
  * @create 2024/9/16 23:23
  **/
+@Slf4j
 public class MyBatisTest {
 
     /**
@@ -151,11 +158,89 @@ public class MyBatisTest {
 
 
     /**
-     *
+     * 测试反射类
      * @throws Exception
      */
     @Test
     public void test06() throws Exception {
+        Teacher teacher = new Teacher();
+        List<Teacher.Student> list = new ArrayList<>();
+        list.add(new Teacher.Student());
+        teacher.setName("rmw");
+        teacher.setStudents(list);
 
+        MetaObject metaObject = SystemMetaObject.forObject(teacher);
+
+        log.info("getGetterNames：{}", JSON.toJSONString(metaObject.getGetterNames()));
+        log.info("getSetterNames：{}", JSON.toJSONString(metaObject.getSetterNames()));
+        log.info("name的get方法返回值：{}", JSON.toJSONString(metaObject.getGetterType("name")));
+        log.info("students的set方法参数值：{}", JSON.toJSONString(metaObject.getGetterType("students")));
+        log.info("name的hasGetter：{}", metaObject.hasGetter("name"));
+        log.info("student.id（属性为对象）的hasGetter：{}", metaObject.hasGetter("student.id"));
+        log.info("获取name的属性值：{}", metaObject.getValue("name"));
+        // 重新设置属性值
+        metaObject.setValue("name", "小白");
+        log.info("设置name的属性值：{}", metaObject.getValue("name"));
+        // 设置属性（集合）的元素值
+        metaObject.setValue("students[0].id", "001");
+        log.info("获取students集合的第一个元素的属性值：{}", JSON.toJSONString(metaObject.getValue("students[0].id")));
+        log.info("对象的序列化：{}", JSON.toJSONString(teacher));
+    }
+
+
+    static class Teacher {
+
+        private String name;
+
+        private double price;
+
+        private List<Student> students;
+
+        private Student student;
+
+        public static class Student {
+
+            private String id;
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
+            }
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
+        }
+
+        public List<Student> getStudents() {
+            return students;
+        }
+
+        public void setStudents(List<Student> students) {
+            this.students = students;
+        }
+
+        public Student getStudent() {
+            return student;
+        }
+
+        public void setStudent(Student student) {
+            this.student = student;
+        }
     }
 }
