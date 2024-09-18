@@ -80,7 +80,7 @@ public class MyBatisTest {
 
         UserDao userDao = sqlSession.getMapper(UserDao.class);
 
-        System.out.println(userDao.getUserName("123"));
+        System.out.println(userDao.getUserInfoById("1"));
     }
 
 
@@ -98,6 +98,7 @@ public class MyBatisTest {
 
         // 持续获得链接
         while (true) {
+            /*数据资源连接池是一个一个创建的*/
             Connection connection = pooledDataSource.getConnection();
             /*
             * 这里实际调用的 PooledConnection中的 realConnection 的toString()方法
@@ -146,5 +147,15 @@ public class MyBatisTest {
         while (true){
 
         }
+    }
+
+
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void test06() throws Exception {
+
     }
 }

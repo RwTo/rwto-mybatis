@@ -4,9 +4,17 @@ import com.rwto.mybatis.binding.MapperRegistry;
 import com.rwto.mybatis.datasource.druid.DruidDataSourceFactory;
 import com.rwto.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.rwto.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import com.rwto.mybatis.executor.Executor;
+import com.rwto.mybatis.executor.SimpleExecutor;
+import com.rwto.mybatis.executor.resultset.DefaultResultSetHandler;
+import com.rwto.mybatis.executor.resultset.ResultSetHandler;
+import com.rwto.mybatis.executor.statement.PreparedStatementHandler;
+import com.rwto.mybatis.executor.statement.StatementHandler;
+import com.rwto.mybatis.mapping.BoundSql;
 import com.rwto.mybatis.mapping.Environment;
 import com.rwto.mybatis.mapping.MappedStatement;
 import com.rwto.mybatis.session.defaults.DefaultSqlSession;
+import com.rwto.mybatis.transaction.Transaction;
 import com.rwto.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.rwto.mybatis.type.TypeAliasRegistry;
 
@@ -68,5 +76,26 @@ public class Configuration {
 
     public Environment getEnvironment() {
         return this.environment;
+    }
+
+    /**
+     * 创建结果集处理器
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    }
+
+    /**
+     * 生产执行器
+     */
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
+    }
+
+    /**
+     * 创建语句处理器
+     */
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler, boundSql);
     }
 }

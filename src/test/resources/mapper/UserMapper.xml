@@ -9,7 +9,7 @@
     </select>
 
     <select id="getUserName" resultType="java.lang.String">
-        SELECT userName
+        SELECT user_name
         FROM t_user
         where id = #{id}
     </select>
