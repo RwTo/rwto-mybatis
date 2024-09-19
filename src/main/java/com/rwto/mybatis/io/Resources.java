@@ -14,7 +14,7 @@ public class Resources {
         return new InputStreamReader(getResourceAsStream(resource));
     }
 
-    private static InputStream getResourceAsStream(String resource) throws IOException {
+    public static InputStream getResourceAsStream(String resource) throws IOException {
         ClassLoader[] classLoaders = getClassLoaders();
         //遍历加载器，加载资源
         for (ClassLoader classLoader : classLoaders) {

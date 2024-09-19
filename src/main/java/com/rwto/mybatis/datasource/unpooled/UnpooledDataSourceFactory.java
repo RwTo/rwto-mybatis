@@ -21,6 +21,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
 
     @Override
     public void setProperties(Properties props) {
+        /*解析dataSource，设置属性值*/
         MetaObject metaObject = SystemMetaObject.forObject(dataSource);
         for (Object key : props.keySet()) {
             String propertyName = (String) key;
