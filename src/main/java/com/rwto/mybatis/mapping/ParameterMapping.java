@@ -2,6 +2,8 @@ package com.rwto.mybatis.mapping;
 
 import com.rwto.mybatis.session.Configuration;
 import com.rwto.mybatis.type.JdbcType;
+import com.rwto.mybatis.type.TypeHandler;
+import com.rwto.mybatis.type.TypeHandlerRegistry;
 
 /**
  * @author renmw
@@ -16,6 +18,7 @@ public class ParameterMapping {
     private Class<?> javaType = Object.class;
     // jdbcType=NUMERIC
     private JdbcType jdbcType;
+    private TypeHandler<?> typeHandler;
 
     private ParameterMapping() {
     }
@@ -41,8 +44,15 @@ public class ParameterMapping {
         }
 
         public ParameterMapping build() {
+            if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
+                Configuration configuration = parameterMapping.configuration;
+                TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+                parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType, parameterMapping.jdbcType);
+            }
+
             return parameterMapping;
         }
+
     }
 
     public Configuration getConfiguration() {
@@ -59,6 +69,10 @@ public class ParameterMapping {
 
     public JdbcType getJdbcType() {
         return jdbcType;
+    }
+
+    public TypeHandler<?> getTypeHandler() {
+        return typeHandler;
     }
 
 }

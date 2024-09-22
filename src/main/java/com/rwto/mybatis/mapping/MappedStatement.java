@@ -1,5 +1,6 @@
 package com.rwto.mybatis.mapping;
 
+import com.rwto.mybatis.scripting.LanguageDriver;
 import com.rwto.mybatis.session.Configuration;
 import lombok.Data;
 
@@ -16,6 +17,8 @@ public class MappedStatement {
     private SqlCommandType sqlCommandType;
     private SqlSource sqlSource;
     Class<?> resultType;
+
+    private LanguageDriver lang;
 
     MappedStatement() {
         // constructor disabled
@@ -34,6 +37,7 @@ public class MappedStatement {
             mappedStatement.sqlCommandType = sqlCommandType;
             mappedStatement.sqlSource = sqlSource;
             mappedStatement.resultType = resultType;
+            mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
         }
 
         public MappedStatement build() {
@@ -62,5 +66,9 @@ public class MappedStatement {
 
     public Class<?> getResultType() {
         return resultType;
+    }
+
+    public LanguageDriver getLang() {
+        return lang;
     }
 }

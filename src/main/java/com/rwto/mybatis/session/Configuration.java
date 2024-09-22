@@ -6,6 +6,7 @@ import com.rwto.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.rwto.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.rwto.mybatis.executor.Executor;
 import com.rwto.mybatis.executor.SimpleExecutor;
+import com.rwto.mybatis.executor.parameter.ParameterHandler;
 import com.rwto.mybatis.executor.resultset.DefaultResultSetHandler;
 import com.rwto.mybatis.executor.resultset.ResultSetHandler;
 import com.rwto.mybatis.executor.statement.PreparedStatementHandler;
@@ -18,6 +19,7 @@ import com.rwto.mybatis.reflection.factory.DefaultObjectFactory;
 import com.rwto.mybatis.reflection.factory.ObjectFactory;
 import com.rwto.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import com.rwto.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import com.rwto.mybatis.scripting.LanguageDriver;
 import com.rwto.mybatis.scripting.LanguageDriverRegistry;
 import com.rwto.mybatis.scripting.xmltags.XMLLanguageDriver;
 import com.rwto.mybatis.session.defaults.DefaultSqlSession;
@@ -149,4 +151,16 @@ public class Configuration {
     public Object getDatabaseId() {
         return databaseId;
     }
+
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+        // 创建参数处理器
+        ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+        // 插件的一些参数，也是在这里处理，暂时不添加这部分内容 interceptorChain.pluginAll(parameterHandler);
+        return parameterHandler;
+    }
+
+    public LanguageDriver getDefaultScriptingLanguageInstance() {
+        return languageRegistry.getDefaultDriver();
+    }
+
 }
