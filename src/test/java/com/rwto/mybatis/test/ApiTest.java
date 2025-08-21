@@ -5,6 +5,7 @@ import com.rwto.mybatis.session.SqlSession;
 import com.rwto.mybatis.session.SqlSessionFactory;
 import com.rwto.mybatis.session.SqlSessionFactoryBuilder;
 import com.rwto.mybatis.test.dao.IUserDao;
+import com.rwto.mybatis.test.po.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class ApiTest {
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
 
         // 3. 测试验证
-        String res = userDao.selectUserById("10001");
+        User res = userDao.selectUserById("1");
         log.info("测试结果：{}", res);
     }
 }

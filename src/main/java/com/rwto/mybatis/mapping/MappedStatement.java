@@ -20,8 +20,5 @@ public class MappedStatement {
     private String id;
     private SqlCommandType sqlCommandType;
 
-    private String parameterType;
-    private String resultType;
-    private String sql;
-    private Map<Integer, String> parameter;
+    private BoundSql boundSql;
 }
