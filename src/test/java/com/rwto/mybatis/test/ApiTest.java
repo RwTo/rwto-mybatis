@@ -33,4 +33,26 @@ public class ApiTest {
         User res = userDao.selectUserById("1");
         log.info("测试结果：{}", res);
     }
+
+
+
+    @Test
+    public void testPooled() throws IOException {
+        // 1. 从SqlSessionFactory中获取SqlSession
+        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        // 2. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+
+        for (int i = 0; i < 30; i++) {
+            // 3. 测试验证
+            User res = userDao.selectUserById("1");
+            log.info("测试结果：{}", res);
+        }
+
+    }
+
+
 }
