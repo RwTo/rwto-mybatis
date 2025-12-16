@@ -48,6 +48,7 @@ public class PooledConnection implements InvocationHandler {
         this.createdTimestamp = System.currentTimeMillis();
         this.lastUsedTimestamp = System.currentTimeMillis();
         this.valid = true;
+        // 这里只能用jdk动态代理，因为connection是接口，需要拦截close方法（改为放入连接池）
         this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
     }
 
@@ -55,6 +56,10 @@ public class PooledConnection implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         // 如果是调用 CLOSE 关闭链接方法，则将链接加入连接池中，并返回null
+         /** 为什么先进行hashcode比较？  hashcode 比较的快，底层编码的习惯*/
+         /** 默认的hashCode计算 与什么有关？ hashCode 官方文档显示：返回一个整数，在 Java 应用执行过程中保持一致。
+          * 所以虽然不知道hashCode 是怎么计算的，可能与地址有关但可以肯定绝对不是地址，因为同一个对象地址是可能发生变化的（GC，新生代升到老年代）
+          * */
         if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
             dataSource.pushConnection(this);
             return null;
