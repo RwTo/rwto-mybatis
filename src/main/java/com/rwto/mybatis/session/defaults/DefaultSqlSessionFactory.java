@@ -1,7 +1,6 @@
 package com.rwto.mybatis.session.defaults;
 
-import com.rwto.mybatis.binding.MapperRegistry;
-import com.rwto.mybatis.datasource.executor.Executor;
+import com.rwto.mybatis.executor.Executor;
 import com.rwto.mybatis.mapping.Environment;
 import com.rwto.mybatis.session.Configuration;
 import com.rwto.mybatis.session.SqlSession;

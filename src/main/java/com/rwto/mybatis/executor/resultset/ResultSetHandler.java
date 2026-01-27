@@ -1,4 +1,4 @@
-package com.rwto.mybatis.datasource.executor.resultset;
+package com.rwto.mybatis.executor.resultset;
 
 import java.sql.SQLException;
 import java.sql.Statement;

@@ -1,7 +1,7 @@
-package com.rwto.mybatis.datasource.executor.statement;
+package com.rwto.mybatis.executor.statement;
 
-import com.rwto.mybatis.datasource.executor.Executor;
-import com.rwto.mybatis.datasource.executor.resultset.ResultSetHandler;
+import com.rwto.mybatis.executor.Executor;
+import com.rwto.mybatis.executor.resultset.ResultSetHandler;
 import com.rwto.mybatis.mapping.BoundSql;
 import com.rwto.mybatis.mapping.MappedStatement;
 import com.rwto.mybatis.session.Configuration;

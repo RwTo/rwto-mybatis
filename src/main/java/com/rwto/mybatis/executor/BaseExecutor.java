@@ -1,4 +1,4 @@
-package com.rwto.mybatis.datasource.executor;
+package com.rwto.mybatis.executor;
 
 import com.rwto.mybatis.mapping.BoundSql;
 import com.rwto.mybatis.mapping.MappedStatement;

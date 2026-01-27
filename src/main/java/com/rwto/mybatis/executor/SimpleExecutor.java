@@ -1,6 +1,6 @@
-package com.rwto.mybatis.datasource.executor;
+package com.rwto.mybatis.executor;
 
-import com.rwto.mybatis.datasource.executor.statement.StatementHandler;
+import com.rwto.mybatis.executor.statement.StatementHandler;
 import com.rwto.mybatis.mapping.BoundSql;
 import com.rwto.mybatis.mapping.MappedStatement;
 import com.rwto.mybatis.session.Configuration;

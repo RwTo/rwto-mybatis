@@ -19,6 +19,6 @@ public class MappedStatement {
     private Configuration configuration;
     private String id;
     private SqlCommandType sqlCommandType;
-
-    private BoundSql boundSql;
+    private SqlSource sqlSource;
+    Class<?> resultType;
 }

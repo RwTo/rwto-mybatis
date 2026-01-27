@@ -1,4 +1,4 @@
-package com.rwto.mybatis.datasource.executor.statement;
+package com.rwto.mybatis.executor.statement;
 
 import com.rwto.mybatis.session.ResultHandler;
 

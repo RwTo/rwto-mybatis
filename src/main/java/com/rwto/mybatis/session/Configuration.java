@@ -2,25 +2,35 @@ package com.rwto.mybatis.session;
 
 import com.rwto.mybatis.binding.MapperRegistry;
 import com.rwto.mybatis.datasource.druid.DruidDataSourceFactory;
-import com.rwto.mybatis.datasource.executor.Executor;
-import com.rwto.mybatis.datasource.executor.SimpleExecutor;
-import com.rwto.mybatis.datasource.executor.resultset.DefaultResultSetHandler;
-import com.rwto.mybatis.datasource.executor.resultset.ResultSetHandler;
-import com.rwto.mybatis.datasource.executor.statement.PreparedStatementHandler;
-import com.rwto.mybatis.datasource.executor.statement.StatementHandler;
+import com.rwto.mybatis.executor.Executor;
+import com.rwto.mybatis.executor.SimpleExecutor;
+import com.rwto.mybatis.executor.resultset.DefaultResultSetHandler;
+import com.rwto.mybatis.executor.resultset.ResultSetHandler;
+import com.rwto.mybatis.executor.statement.PreparedStatementHandler;
+import com.rwto.mybatis.executor.statement.StatementHandler;
 import com.rwto.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.rwto.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.rwto.mybatis.mapping.BoundSql;
 import com.rwto.mybatis.mapping.Environment;
 import com.rwto.mybatis.mapping.MappedStatement;
+import com.rwto.mybatis.reflection.MetaObject;
+import com.rwto.mybatis.reflection.factory.DefaultObjectFactory;
+import com.rwto.mybatis.reflection.factory.ObjectFactory;
+import com.rwto.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import com.rwto.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import com.rwto.mybatis.scripting.LanguageDriverRegistry;
+import com.rwto.mybatis.scripting.xmltags.XMLLanguageDriver;
 import com.rwto.mybatis.transaction.Transaction;
 import com.rwto.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.rwto.mybatis.type.TypeAliasRegistry;
+import com.rwto.mybatis.type.TypeHandlerRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author renmw
@@ -35,6 +45,7 @@ public class Configuration {
     @Getter
     protected Environment environment;
 
+    protected String databaseId;
     /**
      * 映射注册机
      */
@@ -50,6 +61,16 @@ public class Configuration {
      */
     @Getter
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+
+    // 类型处理器注册机
+    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+
+    // 对象工厂和对象包装器工厂
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+
+    protected final Set<String> loadedResources = new HashSet<>();
 
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
@@ -57,6 +78,8 @@ public class Configuration {
 
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+
+        languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
 
 
@@ -68,7 +91,9 @@ public class Configuration {
         return mapperRegistry.getMapper(type, sqlSession);
     }
 
-
+    public String getDatabaseId() {
+        return databaseId;
+    }
     public void addMappedStatement(MappedStatement ms) {
         mappedStatements.put(ms.getId(), ms);
     }
@@ -97,5 +122,28 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
         return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler, boundSql);
+    }
+
+
+    // 创建元对象
+    public MetaObject newMetaObject(Object object) {
+        return MetaObject.forObject(object, objectFactory, objectWrapperFactory);
+    }
+
+    // 类型处理器注册机
+    public TypeHandlerRegistry getTypeHandlerRegistry() {
+        return typeHandlerRegistry;
+    }
+
+    public boolean isResourceLoaded(String resource) {
+        return loadedResources.contains(resource);
+    }
+
+    public void addLoadedResource(String resource) {
+        loadedResources.add(resource);
+    }
+
+    public LanguageDriverRegistry getLanguageRegistry() {
+        return languageRegistry;
     }
 }

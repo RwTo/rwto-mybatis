@@ -1,9 +1,6 @@
 package com.rwto.mybatis.session.defaults;
 
-import com.rwto.mybatis.binding.MapperRegistry;
-import com.rwto.mybatis.datasource.executor.Executor;
-import com.rwto.mybatis.mapping.BoundSql;
-import com.rwto.mybatis.mapping.Environment;
+import com.rwto.mybatis.executor.Executor;
 import com.rwto.mybatis.mapping.MappedStatement;
 import com.rwto.mybatis.session.Configuration;
 import com.rwto.mybatis.session.SqlSession;
@@ -33,7 +30,7 @@ public class DefaultSqlSession implements SqlSession {
     public <T> T selectOne(String statement, Object parameter) {
         try {
             MappedStatement ms = configuration.getMappedStatement(statement);
-            List<T> list = executor.query(ms, parameter, Executor.NO_RESULT_HANDLER, ms.getBoundSql());
+            List<T> list = executor.query(ms, parameter, Executor.NO_RESULT_HANDLER, ms.getSqlSource().getBoundSql(parameter));
             return list.get(0);
         } catch (Exception e) {
             e.printStackTrace();
